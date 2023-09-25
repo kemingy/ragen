@@ -22,10 +22,12 @@ def ask_llm(
         stream=True,
         max_tokens=1000,
         temperature=1,
-        messages=[{
-            "role": "user",
-            "content": prompt,
-        }]
+        messages=[
+            {
+                "role": "user",
+                "content": prompt,
+            }
+        ],
     )
     for result in chat:
         delta = result.choices[0].delta
