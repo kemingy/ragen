@@ -31,5 +31,5 @@ jobs:
         python-version: "3.11"
     - name: Lint
       run: |
-        pip install -e .[dev]
+        pip install ruff black
         make lint
