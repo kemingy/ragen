@@ -12,11 +12,15 @@ classifiers = [
 dependencies = [
     "numpy",
     "openai",
+    "psycopg[binary]",
+]
+[project.optional-dependencies]
+# used for local inference
+local = [
     "torch",
     "transformers",
     "sentence-transformers",
 ]
-[project.optional-dependencies]
 dev = [
     "ruff",
     "black",

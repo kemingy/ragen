@@ -1,20 +1,21 @@
 from ragen.args import build_argument_parser
+from ragen.client import OpenAIClient, PgClient, generate_prompt
 from ragen.emb import Embedding
 from ragen.file import Chunk, ChunkGenerator
-from ragen.llm import ask_llm, generate_prompt
 
 
 def main():
     parser = build_argument_parser()
     args = parser.parse_args()
-    # print(args)
 
-    # print("The following files will be processed:", args.data)
     gen = ChunkGenerator(args.data, args.chunk_size)
     embedding = Embedding(args.emb_model)
+    chat_client = OpenAIClient(args.api_key, args.api_base)
+    OpenAIClient(args.emb_api_key, args.emb_api_base)
+    PgClient(args.db_host, args.db_user, args.db_password, args.db_port)
     context = []
-    for chunk in gen.generate():
-        context.append(Chunk(text=chunk, emb=embedding.encode(chunk)))
+    for i, chunk in enumerate(gen.generate()):
+        context.append(Chunk(index=i, text=chunk, emb=embedding.encode(chunk)))
 
     print("Welcome to Ragen!")
     print(
@@ -33,4 +34,6 @@ def main():
             break
         request = Chunk(text=user_input, emb=embedding.encode(user_input))
         user_context = embedding.retrieve(request, context, args.top_k)
-        ask_llm(generate_prompt(user_context, request), args.model, args.api_key)
+        chat_client.chat(
+            generate_prompt(user_context, request), args.model, args.api_key
+        )

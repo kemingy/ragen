@@ -30,6 +30,18 @@ def build_argument_parser() -> ArgumentParser:
         help="language model API key",
     )
     parser.add_argument(
+        "--api-base",
+        help="language model API base URL",
+    )
+    parser.add_argument(
+        "--emb-api-key",
+        help="embedding model API key",
+    )
+    parser.add_argument(
+        "--emb-api-base",
+        help="embedding model API base URL",
+    )
+    parser.add_argument(
         "--top-k",
         help="top k candidates to be retrieved",
         default=10,
@@ -40,6 +52,27 @@ def build_argument_parser() -> ArgumentParser:
         help="length of each chunk",
         default=300,
         type=int,
+    )
+    parser.add_argument(
+        "--db-host",
+        help="database host",
+        default="localhost",
+    )
+    parser.add_argument(
+        "--db-port",
+        help="database port",
+        default=5432,
+        type=int,
+    )
+    parser.add_argument(
+        "--db-user",
+        help="database user",
+        default="postgres",
+    )
+    parser.add_argument(
+        "--db-password",
+        help="database password",
+        default="",
     )
 
     return parser
