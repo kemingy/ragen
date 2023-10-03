@@ -26,6 +26,12 @@ def build_argument_parser() -> ArgumentParser:
         default="thenlper/gte-base",
     )
     parser.add_argument(
+        "--emb-dim",
+        help="embedding dimension",
+        type=int,
+        default=768,
+    )
+    parser.add_argument(
         "--api-key",
         help="language model API key",
     )
