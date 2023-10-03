@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Generator, List
+from typing import Generator
 
 from torch import Tensor
 from torch.nn.functional import cosine_similarity
@@ -39,6 +39,7 @@ ExtensionToReader = {
 @dataclass(frozen=True)
 class Chunk:
     index: int
+    filename: str
     text: str
     emb: Tensor
 
@@ -47,18 +48,16 @@ class Chunk:
 
 
 class ChunkGenerator:
-    def __init__(self, paths: List[str], size: int) -> None:
-        self.paths = paths
+    def __init__(self, size: int) -> None:
         self.size = size
 
-    def generate(self) -> Generator[str, None, None]:
-        for path in self.paths:
-            partitions = path.rsplit(".", 1)
-            extension = partitions[1] if len(partitions) > 1 else ""
-            if extension not in ExtensionToReader:
-                raise ValueError(f"unsupported extension: {extension}")
-            reader = ExtensionToReader[extension](path)
-            yield from self._gen_chunk(reader)
+    def generate(self, path) -> Generator[str, None, None]:
+        partitions = path.rsplit(".", 1)
+        extension = partitions[1] if len(partitions) > 1 else ""
+        if extension not in ExtensionToReader:
+            raise ValueError(f"unsupported extension: {extension}")
+        reader = ExtensionToReader[extension](path)
+        yield from self._gen_chunk(reader)
 
     def _gen_chunk(self, reader: FileReader) -> Generator[str, None, None]:
         chunk = ""

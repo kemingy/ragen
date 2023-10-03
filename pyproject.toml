@@ -42,8 +42,7 @@ target-version = "py38"
 line-length = 88
 select = ["E", "F", "B", "I", "SIM", "TID", "PL"]
 [tool.ruff.pylint]
-max-branches = 35
-max-statements = 100
+max-args = 7
 
 [tool.black]
 line-length = 88
