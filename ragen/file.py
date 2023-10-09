@@ -1,8 +1,7 @@
 from dataclasses import dataclass
-from typing import Generator
+from typing import Generator, List
 
-from torch import Tensor
-from torch.nn.functional import cosine_similarity
+from scipy.spatial.distance import cosine
 
 
 class FileReader:
@@ -41,10 +40,10 @@ class Chunk:
     index: int
     filename: str
     text: str
-    emb: Tensor
+    emb: List[float]
 
     def cos_sim(self, other: "Chunk") -> float:
-        return cosine_similarity(self.emb, other.emb, dim=0).item()
+        return cosine(self.emb, other.emb, dim=0).item()
 
 
 class ChunkGenerator:

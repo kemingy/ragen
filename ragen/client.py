@@ -49,8 +49,7 @@ class OpenAIClient:
 
 class PgClient:
     LOAD_EXTENSION = """
-DROP EXTENSION IF EXISTS vectors;
-CREATE EXTENSION vectors;
+CREATE EXTENSION IF NOT EXISTS vectors;
 """
     CREATE_TABLE = """
 CREATE TABLE IF NOT EXISTS chunks (
@@ -58,7 +57,7 @@ CREATE TABLE IF NOT EXISTS chunks (
     text TEXT NOT NULL,
     filename TEXT NOT NULL,
     index integer NOT NULL,
-    emb vector(%s) NOT NULL
+    emb vector({}) NOT NULL
 );
 """
     CREATE_INDEX = """
@@ -69,7 +68,7 @@ WITH (options = "capacity = 2097152");
 INSERT INTO chunks (text, filename, index, emb) VALUES (%s, %s, %s, %s)
 """
     SEARCH = """
-SELECT text, emb <-> '%s' AS score
+SELECT text, emb <-> %s AS score
 FROM chunks
 ORDER BY score LIMIT %s;
 """
@@ -87,9 +86,10 @@ ORDER BY score LIMIT %s;
         self.init_db()
 
     def init_db(self):
+        print("Init database table and extension...")
         with psycopg.connect(**self.params) as conn, conn.cursor() as cur:
             cur.execute(self.LOAD_EXTENSION)
-            cur.execute(self.CREATE_TABLE, (str(self.dim),))
+            cur.execute(psycopg.sql.SQL(self.CREATE_TABLE).format(self.dim))
             cur.execute(self.CREATE_INDEX)
             conn.commit()
 
@@ -105,4 +105,4 @@ ORDER BY score LIMIT %s;
             cur.execute(self.SEARCH, (str(chunk.emb), str(top_k)))
             result = cur.fetchall()
             conn.commit()
-        return result
+        return [res[0] for res in result]
