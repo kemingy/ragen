@@ -11,12 +11,17 @@ classifiers = [
 ]
 dependencies = [
     "numpy",
+    "scipy",
     "openai",
+    "psycopg[binary]",
+]
+[project.optional-dependencies]
+# used for local inference
+local = [
     "torch",
     "transformers",
     "sentence-transformers",
 ]
-[project.optional-dependencies]
 dev = [
     "ruff",
     "black",
@@ -38,8 +43,7 @@ target-version = "py38"
 line-length = 88
 select = ["E", "F", "B", "I", "SIM", "TID", "PL"]
 [tool.ruff.pylint]
-max-branches = 35
-max-statements = 100
+max-args = 7
 
 [tool.black]
 line-length = 88

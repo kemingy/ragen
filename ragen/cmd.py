@@ -1,20 +1,28 @@
 from ragen.args import build_argument_parser
-from ragen.emb import Embedding
+from ragen.client import OpenAIClient, PgClient, generate_prompt
 from ragen.file import Chunk, ChunkGenerator
-from ragen.llm import ask_llm, generate_prompt
 
 
 def main():
     parser = build_argument_parser()
     args = parser.parse_args()
-    # print(args)
 
-    # print("The following files will be processed:", args.data)
-    gen = ChunkGenerator(args.data, args.chunk_size)
-    embedding = Embedding(args.emb_model)
+    gen = ChunkGenerator(args.chunk_size)
+    # embedding = Embedding(args.emb_model)
+    chat_client = OpenAIClient(args.model, args.api_key, args.api_base)
+    emb_client = OpenAIClient(args.emb_model, args.emb_api_key, args.emb_api_base)
+    db_client = PgClient(
+        args.db_host, args.db_user, args.db_password, args.db_port, args.emb_dim
+    )
+
     context = []
-    for chunk in gen.generate():
-        context.append(Chunk(text=chunk, emb=embedding.encode(chunk)))
+    for file in args.data:
+        for i, text in enumerate(gen.generate(path=file)):
+            chunk = Chunk(
+                filename=file, index=i, text=text, emb=emb_client.embeddings(text)
+            )
+            context.append(chunk)
+            db_client.insert_chunk(chunk=chunk)
 
     print("Welcome to Ragen!")
     print(
@@ -31,6 +39,10 @@ def main():
         except KeyboardInterrupt:
             print("\nBye!")
             break
-        request = Chunk(text=user_input, emb=embedding.encode(user_input))
-        user_context = embedding.retrieve(request, context, args.top_k)
-        ask_llm(generate_prompt(user_context, request), args.model, args.api_key)
+        request = Chunk(
+            filename="", index=0, text=user_input, emb=emb_client.embeddings(user_input)
+        )
+        user_context = db_client.retrieve_similar_chunk(request, args.top_k)
+        chat_client.chat(
+            generate_prompt(user_context, request),
+        )

@@ -26,8 +26,26 @@ def build_argument_parser() -> ArgumentParser:
         default="thenlper/gte-base",
     )
     parser.add_argument(
+        "--emb-dim",
+        help="embedding dimension",
+        type=int,
+        default=768,
+    )
+    parser.add_argument(
         "--api-key",
         help="language model API key",
+    )
+    parser.add_argument(
+        "--api-base",
+        help="language model API base URL",
+    )
+    parser.add_argument(
+        "--emb-api-key",
+        help="embedding model API key",
+    )
+    parser.add_argument(
+        "--emb-api-base",
+        help="embedding model API base URL",
     )
     parser.add_argument(
         "--top-k",
@@ -40,6 +58,27 @@ def build_argument_parser() -> ArgumentParser:
         help="length of each chunk",
         default=300,
         type=int,
+    )
+    parser.add_argument(
+        "--db-host",
+        help="database host",
+        default="localhost",
+    )
+    parser.add_argument(
+        "--db-port",
+        help="database port",
+        default=5432,
+        type=int,
+    )
+    parser.add_argument(
+        "--db-user",
+        help="database user",
+        default="postgres",
+    )
+    parser.add_argument(
+        "--db-password",
+        help="database password",
+        default="",
     )
 
     return parser
