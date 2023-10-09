@@ -40,10 +40,7 @@ def main():
             print("\nBye!")
             break
         request = Chunk(
-            filename="",
-            index=0,
-            text=user_input,
-            emb=emb_client.embeddings(user_input)
+            filename="", index=0, text=user_input, emb=emb_client.embeddings(user_input)
         )
         user_context = db_client.retrieve_similar_chunk(request, args.top_k)
         chat_client.chat(
