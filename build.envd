@@ -5,11 +5,8 @@ def build():
     install.conda()
     install.python()
     install.python_packages(name=[
-        "torch --index-url https://download.pytorch.org/whl/cpu",
-    ])
-    install.python_packages(name=[
         "numpy",
+        "scipy",
         "openai",
-        "transformers",
-        "sentence-transformers",
+        "psycopg[binary]",
     ])
