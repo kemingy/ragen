@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Generator, List
 
 from scipy.spatial.distance import cosine
@@ -41,6 +41,7 @@ class Chunk:
     filename: str
     text: str
     emb: List[float]
+    tags: List[str] = field(default_factory=list)
 
     def cos_sim(self, other: "Chunk") -> float:
         return cosine(self.emb, other.emb, dim=0).item()
