@@ -21,12 +21,13 @@ def main():
 
     datasets = load_dataset(data, split="train", streaming=True)
     for paper in tqdm(datasets):
+        text = paper.get("abstract").strip()
         chunk = Chunk(
-            filename=paper.get("title"),
+            filename=paper.get("title").strip(),
             index=0,
-            text=paper.get("abstract"),
-            emb=emb_client.embeddings(paper.get("abstract")[0].split(" ")),
-            tags=paper.get("categories"),
+            text=text,
+            emb=emb_client.embeddings(text),
+            tags=paper.get("categories")[0].split(" "),
         )
         db_client.insert_chunk(chunk=chunk)
     db_client.indexing()
